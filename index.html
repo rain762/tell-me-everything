@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tell Me Everything</title>
+  <meta name="description" content="Tell Me Everything — a podcast interviewing 100 people in Silicon Valley. One polaroid per episode." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="stage-intro">
+  <h1 id="title" aria-label="Tell Me Everything">
+    <svg id="title-svg" role="presentation" aria-hidden="true"></svg>
+  </h1>
+
+  <section id="wall" aria-label="Episodes">
+    <div id="track"></div>
+  </section>
+
+  <div id="camera-wrap">
+    <div class="slot-mask" aria-hidden="true">
+      <div id="print"></div>
+    </div>
+
+    <button id="camera" type="button" aria-label="Take a photo">
+      <svg viewBox="0 0 320 270" aria-hidden="true">
+        <defs>
+          <linearGradient id="c-body" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#cfe9f7" />
+            <stop offset=".5" stop-color="#a9d5ee" />
+            <stop offset="1" stop-color="#8cc1e0" />
+          </linearGradient>
+          <linearGradient id="c-side" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#fff" stop-opacity=".35" />
+            <stop offset=".12" stop-color="#fff" stop-opacity="0" />
+            <stop offset=".86" stop-color="#1b4a74" stop-opacity="0" />
+            <stop offset="1" stop-color="#1b4a74" stop-opacity=".22" />
+          </linearGradient>
+          <linearGradient id="c-ring" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f4fafd" />
+            <stop offset=".5" stop-color="#c9e3f2" />
+            <stop offset="1" stop-color="#93bfdb" />
+          </linearGradient>
+          <linearGradient id="c-bezel" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#bfe0f2" />
+            <stop offset="1" stop-color="#7fb2d4" />
+          </linearGradient>
+          <radialGradient id="c-glass" cx=".38" cy=".32" r=".75">
+            <stop offset="0" stop-color="#4a6c8c" />
+            <stop offset=".45" stop-color="#16263a" />
+            <stop offset="1" stop-color="#03070c" />
+          </radialGradient>
+          <radialGradient id="c-iris" cx=".5" cy=".5" r=".5">
+            <stop offset="0" stop-color="#2a3f5c" />
+            <stop offset=".6" stop-color="#0a121c" />
+            <stop offset="1" stop-color="#05080d" />
+          </radialGradient>
+          <pattern id="c-flashlines" width="5" height="44" patternUnits="userSpaceOnUse">
+            <rect width="5" height="44" fill="#eef7fc" />
+            <rect width="1.4" height="44" fill="#cfe2ee" />
+          </pattern>
+        </defs>
+
+        <!-- top ridge + print slot -->
+        <rect x="66" y="10" width="188" height="18" rx="7" fill="#93c4e1" />
+        <rect x="76" y="15" width="168" height="5" rx="2.5" fill="#1a2b3d" />
+
+        <!-- body -->
+        <rect x="8" y="22" width="304" height="240" rx="42" fill="url(#c-body)" />
+        <rect x="8" y="22" width="304" height="240" rx="42" fill="url(#c-side)" />
+        <path d="M52 27 H268" stroke="#fff" stroke-opacity=".7" stroke-width="2.5" stroke-linecap="round" />
+        <path d="M40 256 H280" stroke="#4f86b0" stroke-opacity=".35" stroke-width="3" stroke-linecap="round" />
+
+        <!-- flash -->
+        <rect x="30" y="44" width="80" height="46" rx="10" fill="#8dbedc" />
+        <rect x="34" y="48" width="72" height="38" rx="7" fill="url(#c-flashlines)" />
+        <rect id="flash-glow" x="34" y="48" width="72" height="38" rx="7" fill="#ffffff" opacity="0" />
+
+        <!-- viewfinder -->
+        <rect x="234" y="44" width="52" height="38" rx="10" fill="#8dbedc" />
+        <rect x="239" y="49" width="42" height="28" rx="7" fill="#101a26" />
+        <path d="M244 55 l10 0" stroke="#fff" stroke-opacity=".35" stroke-width="2.5" stroke-linecap="round" />
+
+        <!-- lens barrel -->
+        <circle cx="160" cy="152" r="88" fill="#000" opacity=".08" transform="translate(0 4)" />
+        <circle cx="160" cy="152" r="86" fill="url(#c-bezel)" />
+        <circle cx="160" cy="152" r="78" fill="url(#c-ring)" />
+        <circle cx="160" cy="152" r="66" fill="#dcedf7" stroke="#a6cbe2" stroke-width="1.5" />
+        <g stroke="#9cc3dc" stroke-width="1.2" stroke-linecap="round">
+          <path d="M160 90 v5 M160 209 v5 M98 152 h5 M217 152 h5 M116 108 l3.5 3.5 M200.5 192.5 l3.5 3.5 M204 108 l-3.5 3.5 M119.5 192.5 l-3.5 3.5" />
+        </g>
+        <circle cx="160" cy="152" r="52" fill="#0d1520" />
+        <circle cx="160" cy="152" r="46" fill="url(#c-glass)" />
+        <circle cx="160" cy="152" r="24" fill="url(#c-iris)" />
+        <circle cx="160" cy="152" r="24" fill="none" stroke="#5b7ea3" stroke-opacity=".35" stroke-width="1" />
+        <ellipse cx="143" cy="133" rx="16" ry="9" fill="#fff" opacity=".28" transform="rotate(-35 143 133)" />
+        <circle cx="178" cy="170" r="3.5" fill="#fff" opacity=".22" />
+
+        <!-- strap lug -->
+        <rect x="306" y="62" width="9" height="28" rx="3.5" fill="#7fb2d4" />
+
+        <!-- shutter button -->
+        <g id="shutter-btn">
+          <circle cx="276" cy="146" r="17" fill="#7fb2d4" />
+          <circle class="cap" cx="276" cy="144.5" r="13.5" fill="#f5fafd" />
+          <circle class="cap" cx="276" cy="144.5" r="9" fill="#e4f0f8" />
+        </g>
+      </svg>
+    </button>
+
+    <div id="hint" aria-hidden="true">
+      <span class="ring r1"></span>
+      <span class="ring r2"></span>
+      <svg class="hand" viewBox="0 0 48 48">
+        <path d="M18 7.5c0-2 1.6-3.5 3.5-3.5S25 5.5 25 7.5V20l7.4 1.2c2.6.4 4.4 2.8 4.1 5.4l-1.2 9.5c-.4 3.2-3.1 5.6-6.3 5.6h-8.8c-1.9 0-3.7-.9-4.9-2.4L9 30.3c-1.1-1.4-.8-3.4.7-4.4 1.2-.8 2.8-.7 3.8.3l4.5 4.3V7.5z"
+          fill="#fdfefe" stroke="#1f2f56" stroke-width="2" stroke-linejoin="round" />
+      </svg>
+    </div>
+  </div>
+
+  <div id="flash" aria-hidden="true"></div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
