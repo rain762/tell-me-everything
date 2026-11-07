@@ -2,7 +2,7 @@ import { CameraSound } from './sound.js';
 import { episodes, cardHTML } from './cards.js';
 
 const NS = 'http://www.w3.org/2000/svg';
-const TITLE = 'Tell Me Everything';
+const LINES = ['Tell me', 'everything'];
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const body = document.body;
@@ -20,35 +20,48 @@ let state = 'intro';
 // ------------------------------------------------------------------ 1. handwrite the title
 async function writeTitle() {
   const svg = document.getElementById('title-svg');
-  try { await document.fonts.load('600 100px "Caveat"'); } catch {}
+  try { await document.fonts.load('100px "Special Elite"'); } catch {}
 
-  const measure = document.createElementNS(NS, 'text');
-  measure.setAttribute('x', '0');
-  measure.setAttribute('y', '100');
-  measure.setAttribute('class', 'measure');
-  measure.textContent = TITLE;
-  svg.appendChild(measure);
-
-  const bb = measure.getBBox();
-  const pad = 14;
-  svg.setAttribute('viewBox', `${bb.x - pad} ${bb.y - pad} ${bb.width + pad * 2} ${bb.height + pad * 2}`);
-
-  const STEP = 0.085;
-  let k = 0;
-  for (let i = 0; i < TITLE.length; i++) {
-    if (TITLE[i] === ' ') { k += 2.5; continue; } // the pen lifts between words
-    const p = measure.getStartPositionOfChar(i);
+  // lay out both lines centred, then split into letters that get written one by one
+  const LEAD = 104;
+  const measures = LINES.map((line, n) => {
     const t = document.createElementNS(NS, 'text');
-    t.setAttribute('x', p.x);
-    t.setAttribute('y', p.y);
-    t.setAttribute('class', 'letter');
-    t.style.setProperty('--d', `${(0.35 + k * STEP).toFixed(3)}s`);
-    t.textContent = TITLE[i];
+    t.setAttribute('x', '0');
+    t.setAttribute('y', String(100 + n * LEAD));
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('class', 'measure');
+    t.textContent = line;
     svg.appendChild(t);
-    k++;
-  }
-  measure.remove();
-  await wait((0.35 + k * STEP + 0.9) * 1000);
+    return t;
+  });
+  const boxes = measures.map((t) => t.getBBox());
+  const x0 = Math.min(...boxes.map((b) => b.x));
+  const x1 = Math.max(...boxes.map((b) => b.x + b.width));
+  const y0 = boxes[0].y;
+  const y1 = boxes[boxes.length - 1].y + boxes[boxes.length - 1].height;
+  const pad = 14;
+  svg.setAttribute('viewBox', `${x0 - pad} ${y0 - pad} ${x1 - x0 + pad * 2} ${y1 - y0 + pad * 2}`);
+
+  const STEP = 0.1;
+  let k = 0;
+  measures.forEach((m, n) => {
+    const line = LINES[n];
+    for (let i = 0; i < line.length; i++) {
+      if (line[i] === ' ') { k += 2; continue; } // the pen lifts between words
+      const p = m.getStartPositionOfChar(i);
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('x', p.x);
+      t.setAttribute('y', p.y);
+      t.setAttribute('class', 'letter');
+      t.style.setProperty('--d', `${(0.35 + k * STEP).toFixed(3)}s`);
+      t.textContent = line[i];
+      svg.appendChild(t);
+      k++;
+    }
+    k += 2.5; // and moves down to the next line
+  });
+  measures.forEach((m) => m.remove());
+  await wait((0.35 + k * STEP + 0.6) * 1000);
 }
 
 // ------------------------------------------------------------------ 2. camera rises, hint appears
