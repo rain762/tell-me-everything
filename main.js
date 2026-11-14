@@ -351,9 +351,14 @@ async function saveSignup(entry) {
     if (!res.ok) throw new Error('endpoint');
     return;
   }
-  const db = window.claude?.use ? await window.claude.use('db') : null;
-  if (!db) throw new Error('unavailable');
-  await db.collection('signups').add(entry);
+  // claude.ai artifact preview: one private row per visitor, readable only by the owner
+  const [db, user] = window.claude?.use ? await Promise.all([window.claude.use('db'), window.claude.use('user')]) : [];
+  const id = user ? await user.id() : null;
+  if (!db || !id) throw new Error('unavailable');
+  const ref = db.doc(`signups/${id}`);
+  const snap = await ref.get();
+  const entries = (snap.exists && Array.isArray(snap.data()?.entries)) ? snap.data().entries : [];
+  await ref.set({ entries: [...entries, entry].slice(-50) });
 }
 
 form.addEventListener('submit', async (e) => {
