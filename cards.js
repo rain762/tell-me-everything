@@ -12,10 +12,10 @@ function rng(seed) {
 
 // ------------------------------------------------------------------ poems (placeholders)
 const poems = [
+  ['go create a life', "you can't wait", 'to wake up to'],
+  ['let it be', 'unpolished', 'and messy', 'and true'],
+  ['i feel like i can go', 'higher, farther,', 'stronger,', 'and happier'],
   ['tell me', 'the part', 'you left out'],
-  ['who were you', 'before', 'the pitch deck?'],
-  ['a hundred', 'strangers,', 'one question'],
-  ['say it slowly.', 'we have', 'all afternoon'],
 ];
 
 // ------------------------------------------------------------------ the wall
@@ -47,7 +47,7 @@ export function episodes() {
 
 export function cardHTML(ep, { undeveloped = false } = {}) {
   const inner = ep.poem !== undefined
-    ? `<div class="poem">${poems[ep.poem].map((l) => `<span>${l}</span>`).join('')}</div>`
+    ? `<div class="poem${poems[ep.poem].some((l) => l.length > 15) ? ' long' : ''}">${poems[ep.poem].map((l) => `<span>${l}</span>`).join('')}</div>`
     : `<img src="${ep.img}" alt="" draggable="false" />`;
   return `<div class="card${undeveloped ? ' undeveloped' : ''}" style="--frame:var(--frame-${ep.frame});--tape:${ep.tape}deg">
     <div class="tape"></div>

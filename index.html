@@ -7,13 +7,17 @@
   <meta name="description" content="Tell Me Everything — a podcast interviewing 100 people in Silicon Valley. One polaroid per episode." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono&family=Special+Elite&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="stage-intro">
-  <h1 id="title" aria-label="Tell Me Everything">
-    <svg id="title-svg" role="presentation" aria-hidden="true"></svg>
-  </h1>
+  <header id="title">
+    <h1 aria-label="Tell Me Everything"><svg id="title-svg" role="presentation" aria-hidden="true"></svg></h1>
+    <div class="below">
+      <p id="tagline" aria-label="100 people in Silicon Valley. The stories behind the titles."></p>
+      <button id="join" type="button">Be a guest / nominate someone</button>
+    </div>
+  </header>
 
   <section id="wall" aria-label="Episodes">
     <div id="track"></div>
@@ -121,6 +125,60 @@
   </div>
 
   <div id="flash" aria-hidden="true"></div>
+
+  <dialog id="signup" aria-labelledby="signup-title">
+    <form id="signup-form" method="dialog" novalidate>
+      <button class="close" type="button" aria-label="Close">&times;</button>
+      <h2 id="signup-title">Tell us everything</h2>
+      <div class="tabs" role="radiogroup" aria-label="What would you like to do?">
+        <label><input type="radio" name="kind" value="guest" checked /> <span>Be a guest</span></label>
+        <label><input type="radio" name="kind" value="nominate" /> <span>Nominate someone</span></label>
+      </div>
+
+      <div class="row">
+        <label for="f-name">Your name</label>
+        <input id="f-name" name="name" required autocomplete="name" />
+      </div>
+      <div class="row">
+        <label for="f-email">Your email</label>
+        <input id="f-email" name="email" type="email" required autocomplete="email" />
+      </div>
+
+      <div class="only-guest">
+        <div class="row">
+          <label for="f-role">What you do</label>
+          <input id="f-role" name="role" placeholder="founder at a seed-stage startup, designer, student…" />
+        </div>
+        <div class="row">
+          <label for="f-story">A story you have never told on a podcast</label>
+          <textarea id="f-story" name="story" rows="3"></textarea>
+        </div>
+      </div>
+
+      <div class="only-nominate">
+        <div class="row">
+          <label for="f-their-name">Their name</label>
+          <input id="f-their-name" name="theirName" />
+        </div>
+        <div class="row">
+          <label for="f-their-contact">How to reach them</label>
+          <input id="f-their-contact" name="theirContact" placeholder="email, LinkedIn or X" />
+        </div>
+        <div class="row">
+          <label for="f-why">Why them?</label>
+          <textarea id="f-why" name="why" rows="3"></textarea>
+        </div>
+      </div>
+
+      <p class="error" id="signup-error" role="alert" hidden></p>
+      <button class="send" type="submit">Send</button>
+    </form>
+    <div class="sent" id="signup-sent" hidden>
+      <h2>Got it, thank you.</h2>
+      <p>We read every one. If it is a fit, we will reach out by email.</p>
+      <button class="send" type="button" data-close>Back to the wall</button>
+    </div>
+  </dialog>
 
   <script type="module" src="main.js"></script>
 </body>

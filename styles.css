@@ -4,6 +4,7 @@
 ------------------------------------------------------------------- */
 :root {
   --type: "Special Elite", "Courier New", Courier, monospace;
+  --mono: "Space Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   --ink: #2e2e2e;
   --wall: #f6f3ee;
   --frame-blue: #2d86c9;
@@ -42,13 +43,67 @@ body {
   position: fixed;
   left: 50%;
   top: 30%;
-  width: min(86vw, 760px);
+  width: min(80vw, 640px, 72vh);
   margin: 0;
   transform: translate(-50%, -50%);
   transition: top 1.4s var(--ease-soft), width 1.4s var(--ease-soft);
   z-index: 5;
   pointer-events: none;
 }
+#title h1 { margin: 0; }
+#title .below {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  width: max-content;
+  max-width: 90vw;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+#tagline {
+  margin: 0;
+  min-height: 1.6em;
+  font-family: var(--mono);
+  font-size: clamp(11px, 1.05vw, 14px);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  text-align: center;
+  text-wrap: balance;
+  color: var(--ink);
+}
+#tagline .caret {
+  display: inline-block;
+  width: .55em;
+  height: 1.05em;
+  margin-left: .1em;
+  vertical-align: -.15em;
+  background: var(--ink);
+  animation: blink 1s steps(1) infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+#join {
+  font-family: var(--type);
+  font-size: clamp(14px, 1.15vw, 16px);
+  color: #fff;
+  background: var(--frame-blue);
+  border: 0;
+  border-radius: 2px;
+  padding: .7em 1.2em .6em;
+  cursor: pointer;
+  pointer-events: auto;
+  box-shadow: 0 1px 1px rgba(30, 40, 55, .18), 0 8px 16px -8px rgba(30, 40, 55, .35);
+  transform: rotate(-1.2deg);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform .5s var(--ease-out), box-shadow .5s var(--ease-out), opacity .8s ease, visibility 0s .8s;
+}
+.stage-wall #join { opacity: 1; visibility: visible; transition-delay: 0s, 0s, 1.6s, 1.6s; }
+#join:hover { transform: rotate(0deg) translateY(-2px); box-shadow: 0 1px 1px rgba(30, 40, 55, .18), 0 14px 22px -10px rgba(30, 40, 55, .4); }
+#join:focus-visible { outline: 2px dashed var(--ink); outline-offset: 4px; }
+
 #title-svg { display: block; width: 100%; height: auto; overflow: visible; }
 #title-svg text {
   font-family: var(--type);
@@ -220,7 +275,7 @@ body {
   position: fixed;
   left: 0;
   right: 0;
-  top: 53%;
+  top: 58%;
   height: calc(var(--card-h) + 140px);
   transform: translateY(-50%);
   overflow: hidden;
@@ -369,6 +424,7 @@ body {
   line-height: calc(var(--card-w) * .13);
   color: var(--ink);
 }
+.poem.long { font-size: calc(var(--card-w) * .058); line-height: calc(var(--card-w) * .11); padding: 0 9%; }
 .poem span { display: block; }
 .poem span:nth-child(2) { padding-left: 10%; }
 .poem span:nth-child(3) { padding-left: 4%; }
@@ -395,7 +451,63 @@ body {
   .stage-shot #title, .stage-wall #title { width: 60vw; top: 10%; }
 }
 
+/* ------------------------------------------------------------------ sign-up form */
+#signup {
+  width: min(92vw, 460px);
+  max-height: 88vh;
+  overflow: auto;
+  padding: 34px 30px 28px;
+  border: 0;
+  border-radius: 2px;
+  background: #fbfaf7;
+  color: var(--ink);
+  box-shadow: 0 2px 2px rgba(30, 40, 55, .12), 0 30px 60px -20px rgba(30, 40, 55, .45);
+  font-family: var(--type);
+}
+#signup[open] { animation: note-in .5s var(--ease-out); }
+@keyframes note-in { from { opacity: 0; transform: translateY(24px) rotate(-1.5deg); } }
+#signup::backdrop { background: rgba(40, 38, 34, .35); backdrop-filter: blur(3px); }
+#signup h2 { margin: 0 0 18px; font-weight: 400; font-size: 26px; }
+#signup .close {
+  position: absolute; top: 10px; right: 12px;
+  border: 0; background: none; font-size: 26px; line-height: 1; color: var(--ink); cursor: pointer; padding: 6px;
+}
+#signup .tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+#signup .tabs label { position: relative; cursor: pointer; }
+#signup .tabs input { position: absolute; opacity: 0; }
+#signup .tabs span {
+  display: inline-block; padding: .45em .9em .4em; border: 1.5px solid var(--frame-blue); border-radius: 2px;
+  color: var(--frame-blue); font-size: 15px; transition: background .25s, color .25s;
+}
+#signup .tabs input:checked + span { background: var(--frame-blue); color: #fff; }
+#signup .tabs input:focus-visible + span { outline: 2px dashed var(--ink); outline-offset: 3px; }
+#signup .row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+#signup label { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+#signup input:not([type=radio]), #signup textarea {
+  font: 17px/1.4 var(--type);
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-bottom: 1.5px solid rgba(46, 46, 46, .35);
+  padding: 6px 0;
+  border-radius: 0;
+  resize: vertical;
+}
+#signup input::placeholder, #signup textarea::placeholder { color: rgba(46, 46, 46, .4); }
+#signup input:focus, #signup textarea:focus { outline: none; border-bottom-color: var(--frame-blue); }
+#signup .only-nominate { display: none; }
+#signup form.nominate .only-nominate { display: block; }
+#signup form.nominate .only-guest { display: none; }
+#signup .error { color: #b3261e; font-family: var(--mono); font-size: 12px; margin: 4px 0 12px; }
+#signup .send {
+  font: 17px var(--type); color: #fff; background: var(--frame-blue); border: 0; border-radius: 2px;
+  padding: .65em 1.4em .55em; cursor: pointer; margin-top: 6px;
+}
+#signup .send:disabled { opacity: .6; cursor: progress; }
+#signup .sent p { line-height: 1.5; margin: 0 0 20px; }
+
 @media (prefers-reduced-motion: reduce) {
+  #signup[open] { animation: none; }
   #title-svg .letter { animation-duration: .01s, .01s; animation-delay: 0s, 0s; }
   #hint .ring, #hint .hand { animation: none; }
 }

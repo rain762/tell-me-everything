@@ -3,6 +3,12 @@ import { episodes, cardHTML } from './cards.js';
 
 const NS = 'http://www.w3.org/2000/svg';
 const LINES = ['Tell me', 'everything'];
+const TAGLINE = '100 people in Silicon Valley. The stories behind the titles.';
+
+// Where sign-ups go on the live site. Paste a form endpoint here (for example a
+// Formspree or Basin URL); it receives the form as JSON. Left empty, the page saves
+// sign-ups to the artifact's database when it runs as a claude.ai artifact.
+const SIGNUP_ENDPOINT = '';
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const body = document.body;
@@ -191,8 +197,9 @@ function nudge(px) {
 }
 
 // mouse wheel and trackpad: either scroll direction moves the wall sideways
+const formOpen = () => document.getElementById('signup').open;
 addEventListener('wheel', (e) => {
-  if (state !== 'wall') return;
+  if (state !== 'wall' || formOpen()) return;
   e.preventDefault();
   const unit = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerWidth : 1;
   const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
@@ -201,7 +208,7 @@ addEventListener('wheel', (e) => {
 
 // arrow keys step one polaroid at a time
 addEventListener('keydown', (e) => {
-  if (state !== 'wall') return;
+  if (state !== 'wall' || formOpen() || e.target.closest('input, textarea, button')) return;
   const step = carousel.slots[0] ? carousel.slots[1].offsetLeft - carousel.slots[0].offsetLeft : 250;
   if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { nudge(step); e.preventDefault(); }
   if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { nudge(-step); e.preventDefault(); }
@@ -308,6 +315,84 @@ async function flyToWall() {
   startCarousel();
 }
 
+// ------------------------------------------------------------------ sign up / nominate
+const dialog = document.getElementById('signup');
+const form = document.getElementById('signup-form');
+const sent = document.getElementById('signup-sent');
+const errorEl = document.getElementById('signup-error');
+
+function showKind() {
+  const nominate = form.kind.value === 'nominate';
+  form.classList.toggle('nominate', nominate);
+  form.theirName.required = nominate;
+  form.theirContact.required = nominate;
+}
+form.addEventListener('change', (e) => { if (e.target.name === 'kind') showKind(); });
+
+document.getElementById('join').addEventListener('click', () => {
+  form.hidden = false;
+  sent.hidden = true;
+  errorEl.hidden = true;
+  showKind();
+  dialog.showModal();
+  form.elements.name.focus();
+});
+dialog.querySelector('.close').addEventListener('click', () => dialog.close());
+sent.querySelector('[data-close]').addEventListener('click', () => dialog.close());
+dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); }); // click outside the note
+
+async function saveSignup(entry) {
+  if (SIGNUP_ENDPOINT) {
+    const res = await fetch(SIGNUP_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify(entry),
+    });
+    if (!res.ok) throw new Error('endpoint');
+    return;
+  }
+  const db = window.claude?.use ? await window.claude.use('db') : null;
+  if (!db) throw new Error('unavailable');
+  await db.collection('signups').add(entry);
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  errorEl.hidden = true;
+  if (!form.checkValidity()) {
+    const bad = form.querySelector(':invalid');
+    errorEl.textContent = bad.type === 'email' && bad.value
+      ? 'That email address looks incomplete. Check it and send again.'
+      : `Fill in "${form.querySelector(`label[for="${bad.id}"]`).textContent.toLowerCase()}", then send again.`;
+    errorEl.hidden = false;
+    bad.focus();
+    return;
+  }
+  const f = Object.fromEntries(new FormData(form));
+  const entry = f.kind === 'nominate'
+    ? { kind: 'nominate', name: f.name, email: f.email, theirName: f.theirName, theirContact: f.theirContact, why: f.why || '' }
+    : { kind: 'guest', name: f.name, email: f.email, role: f.role || '', story: f.story || '' };
+  entry.at = new Date().toISOString();
+
+  const btn = form.querySelector('.send');
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+  try {
+    await saveSignup(entry);
+    form.reset();
+    form.hidden = true;
+    sent.hidden = false;
+  } catch (err) {
+    errorEl.textContent = err.message === 'unavailable'
+      ? 'Sign-ups are not connected on this preview yet. Your answers are still here.'
+      : 'That did not go through. Check your connection and send again; your answers are still here.';
+    errorEl.hidden = false;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Send';
+  }
+});
+
 // ------------------------------------------------------------------ boot
 camera.addEventListener('click', shoot);
 
@@ -320,7 +405,23 @@ addEventListener('resize', () => {
   applyX();
 });
 
+async function typeTagline() {
+  const el = document.getElementById('tagline');
+  const text = document.createElement('span');
+  const caret = document.createElement('span');
+  caret.className = 'caret';
+  text.setAttribute('aria-hidden', 'true');
+  el.append(text, caret);
+  for (const ch of TAGLINE) {
+    text.textContent += ch;
+    await wait(ch === ' ' ? 55 : ch === '.' ? 260 : 34 + Math.random() * 30);
+  }
+  el.classList.add('done');
+  setTimeout(() => caret.remove(), 2600);
+}
+
 (async () => {
   await writeTitle();
+  typeTagline();
   await presentCamera();
 })();
