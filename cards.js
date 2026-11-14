@@ -20,18 +20,17 @@ const poems = [
 
 // ------------------------------------------------------------------ the wall
 // One polaroid per episode. no. 001 is the first guest; the rest are placeholders
-// (photos from the Figma moodboard and short poems) until more episodes are recorded.
+// (your photos and short poems) until more episodes are recorded.
 const plan = [
   { img: 'img/ep-001.jpg', frame: 'blue' },
-  { img: 'img/p-sky.jpg', frame: 'pale' },
+  { img: 'img/ph-1.jpg', frame: 'pale' },
   { poem: 0, frame: 'blue' },
-  { img: 'img/p-cake.jpg', frame: 'blue' },
-  { img: 'img/p-flowers.jpg', frame: 'pale' },
+  { img: 'img/ph-2.jpg', frame: 'blue' },
+  { img: 'img/ph-3.jpg', frame: 'pale' },
   { poem: 1, frame: 'pale' },
-  { img: 'img/p-berries.jpg', frame: 'blue' },
-  { img: 'img/p-beach.jpg', frame: 'pale' },
+  { img: 'img/ph-4.jpg', frame: 'blue' },
+  { img: 'img/ph-5.jpg', frame: 'pale' },
   { poem: 2, frame: 'blue' },
-  { img: 'img/p-friends.jpg', frame: 'blue' },
   { poem: 3, frame: 'pale' },
 ];
 
