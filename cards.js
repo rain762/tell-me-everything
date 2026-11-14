@@ -26,12 +26,12 @@ const plan = [
   { img: 'img/ph-1.jpg', frame: 'pale' },
   { poem: 0, frame: 'blue' },
   { img: 'img/ph-2.jpg', frame: 'blue' },
-  { img: 'img/ph-3.jpg', frame: 'pale' },
   { poem: 1, frame: 'pale' },
   { img: 'img/ph-4.jpg', frame: 'blue' },
   { img: 'img/ph-5.jpg', frame: 'pale' },
   { poem: 2, frame: 'blue' },
-  { poem: 3, frame: 'pale' },
+  { img: 'img/ph-3.jpg', frame: 'pale' },
+  { poem: 3, frame: 'blue' },
 ];
 
 export function episodes() {

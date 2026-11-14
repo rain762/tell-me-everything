@@ -116,6 +116,7 @@ async function shoot() {
 
 // ------------------------------------------------------------------ 4. the wall carousel
 const carousel = {
+  pending: 0,
   x: 0, speed: 0, target: 0, base: 34, W: 0, last: 0, running: false, slots: [],
 };
 
@@ -157,9 +158,12 @@ function tick(ts) {
   const dt = Math.min(0.05, (ts - (carousel.last || ts)) / 1000);
   carousel.last = ts;
   carousel.speed += (carousel.target - carousel.speed) * Math.min(1, dt * 2.2);
-  carousel.x -= carousel.speed * dt;
-  if (carousel.x <= -carousel.W) carousel.x += carousel.W;
-  if (carousel.x > 0) carousel.x -= carousel.W;
+  // scroll / swipe / arrow keys queue up a distance that glides out smoothly
+  const glide = carousel.pending * Math.min(1, dt * 7);
+  carousel.pending -= glide;
+  carousel.x -= carousel.speed * dt + glide;
+  while (carousel.x <= -carousel.W) carousel.x += carousel.W;
+  while (carousel.x > 0) carousel.x -= carousel.W;
   applyX();
   requestAnimationFrame(tick);
 }
@@ -178,6 +182,59 @@ track.addEventListener('pointerover', (e) => {
 track.addEventListener('pointerleave', () => {
   carousel.target = reduced ? 0 : carousel.base;
 });
+
+// ------------------------------------------------------------------ navigate the wall yourself
+const MAX_QUEUE = () => window.innerWidth * 1.5;
+function nudge(px) {
+  if (state !== 'wall') return;
+  carousel.pending = Math.max(-MAX_QUEUE(), Math.min(MAX_QUEUE(), carousel.pending + px));
+}
+
+// mouse wheel and trackpad: either scroll direction moves the wall sideways
+addEventListener('wheel', (e) => {
+  if (state !== 'wall') return;
+  e.preventDefault();
+  const unit = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? window.innerWidth : 1;
+  const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+  nudge(d * unit * 1.1);
+}, { passive: false });
+
+// arrow keys step one polaroid at a time
+addEventListener('keydown', (e) => {
+  if (state !== 'wall') return;
+  const step = carousel.slots[0] ? carousel.slots[1].offsetLeft - carousel.slots[0].offsetLeft : 250;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { nudge(step); e.preventDefault(); }
+  if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { nudge(-step); e.preventDefault(); }
+});
+
+// drag or swipe the wall, with a little momentum when you let go
+const wallEl = document.getElementById('wall');
+let drag = null;
+wallEl.addEventListener('pointerdown', (e) => {
+  if (state !== 'wall') return;
+  drag = { x: e.clientX, t: performance.now(), v: 0, moved: 0 };
+  carousel.pending = 0;
+  wallEl.setPointerCapture(e.pointerId);
+});
+wallEl.addEventListener('pointermove', (e) => {
+  if (!drag) return;
+  const now = performance.now();
+  const dx = e.clientX - drag.x;
+  carousel.x += dx;
+  drag.v = dx / Math.max(1, now - drag.t); // px per ms
+  drag.moved += Math.abs(dx);
+  drag.x = e.clientX;
+  drag.t = now;
+  wallEl.classList.toggle('dragging', drag.moved > 4);
+});
+const endDrag = () => {
+  if (!drag) return;
+  nudge(-drag.v * 140);
+  drag = null;
+  wallEl.classList.remove('dragging');
+};
+wallEl.addEventListener('pointerup', endDrag);
+wallEl.addEventListener('pointercancel', endDrag);
 
 async function flyToWall() {
   const target = centreSlot();
