@@ -14,6 +14,7 @@ Landing page for **Tell Me Everything**, a podcast interviewing 100 people in Si
 - `main.js`: title writing, the shooting sequence, and the carousel
 - `sound.js`: camera sounds synthesized live with the Web Audio API (no audio files)
 - `cards.js`: the episode list. Swap in real photos as guests are recorded.
+- `DESIGN.md`: the design style and expectations.
 - `AGENTS.md`: how the project is laid out, for AI coding agents (Codex, Claude Code, Cursor).
 
 ## Run locally
